@@ -14,7 +14,7 @@ body {
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     padding: 20px;
-    width: 100%;
+    width: 16rem;
     border: 1px solid rgba(0, 0, 0, 0.268);
 }
 
@@ -112,4 +112,10 @@ body {
 
 .zero {
     grid-column: span 3;
+}
+
+@media only screen and (min-width: 1024px) {
+    .calculator {
+        width: 18rem;
+    }
 }
