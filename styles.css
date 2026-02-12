@@ -37,7 +37,7 @@ body {
 }
 
 .btn {
-    padding: 20px;
+    padding: 20px 15px;
     font-size: 1.2em;
     border: none;
     border-radius: 10px;
@@ -103,7 +103,7 @@ body {
 .equal {
     background-color: #6f42c1;
     color: white;
-    grid-row: span 3;
+    grid-row: span 1;
 }
 
 .equal:hover {

@@ -1,99 +1,8 @@
-// let display = document.getElementById('display');
-// let firstNumber = localStorage.getItem("firstNumber") ?? '';
-// let operator = localStorage.getItem("operator") ?? '';
-// let secondNumber = localStorage.getItem("secondNumber") ?? '';
-
-// function updateDisplay(value) {
-//     display.textContent = value;
-// }
-
-// function clear() {
-//     firstNumber = '';
-//     operator = '';
-//     secondNumber = '';
-
-//     localStorage.removeItem("firstNumber");
-//     localStorage.removeItem("operator");
-//     localStorage.removeItem("secondNumber");
-
-//     updateDisplay('0');
-// }
-
-// function appendNumber(number) {
-//     if (operator === '') {
-//         if (firstNumber === '0') {
-//             firstNumber = number;
-//         } else {
-//             firstNumber += number;
-//         }
-//         localStorage.setItem('firstNumber', firstNumber);
-//         updateDisplay(firstNumber);
-//     } else {
-//         if (secondNumber === '0') {
-//             secondNumber = number;
-//         } else {
-//             secondNumber += number;
-//         }
-//         localStorage.setItem('secondNumber', secondNumber);
-//         updateDisplay(secondNumber);
-//     }
-// }
-
-// function chooseOperator(op) {
-//     if (firstNumber !== '' && secondNumber !== '') {
-//         operate();
-//     }
-//     if (firstNumber !== '') {
-//         operator = op;
-//         localStorage.setItem('operator', operator);
-//     }
-// }
-
-// function operate() {
-//     if (firstNumber === '' || operator === '' || secondNumber === '') return;
-//     let result;
-//     const num1 = parseFloat(firstNumber);
-//     const num2 = parseFloat(secondNumber);
-//     switch (operator) {
-//         case 'add':
-//             result = num1 + num2;
-//             break;
-//         case 'subtract':
-//             result = num1 - num2;
-//             break;
-//         case 'multiply':
-//             result = num1 * num2;
-//             break;
-//         case 'divide':
-//             if (num2 === 0) {
-//                 clear();
-//                 display.textContent = 'Error: Divide by 0';
-//                 return;
-//             }
-//             result = num1 / num2;
-//             break;
-//         default:
-//             return;
-//     }
-//     result = Math.round(result * 1000000) / 1000000; // Round to 6 decimal places
-//     clear();
-//     localStorage.setItem('firstNumber', result);
-//     firstNumber = localStorage.getItem("firstNumber");
-//     updateDisplay(firstNumber);
-// }
-
-// document.getElementById('clear').addEventListener('click', clear);
-// document.getElementById('equal').addEventListener('click', operate);
-
-// document.querySelectorAll('.number').forEach(button => {
-//     button.addEventListener('click', () => appendNumber(button.id));
-// });
-
-// document.querySelectorAll('.operator').forEach(button => {
-//     button.addEventListener('click', () => chooseOperation(button.id));
-// });
-
 const display = document.getElementById('display');
+const decimalBtn = document.getElementById('decimal');
+const backspaceBtn = document.getElementById('backspace');
+const clearBtn = document.getElementById('clear');
+const equalBtn = document.getElementById('equal');
 
 const state = {
     first: null,
@@ -114,6 +23,18 @@ const clear = () => {
     updateDisplay('0');
 }
 
+const backspace = () => {
+    if (state.operator === null) {
+        if (!state.first) return;
+        state.first = state.first.slice(0, -1) || null;
+        updateDisplay(state.first || '0');
+    } else {
+        if (!state.second) return;
+        state.second = state.second.slice(0, -1) || null;
+        updateDisplay(state.second || '0');
+    }
+}
+
 const appendNumber = (number) => {
     if (state.resultDisplayed) {
         state.first = number;
@@ -128,6 +49,20 @@ const appendNumber = (number) => {
     } else {
         state.second = state.second ? state.second + number : number;
         updateDisplay(state.second);
+    }
+}
+
+const appendDecimal = () => {
+    if (state.operator === null) {
+        if (!state.first.includes('.')) {
+            state.first = state.first ? state.first + '.' : '0.';
+            updateDisplay(state.first);
+        } 
+    } else {
+        if (!state.second.includes('.')) {
+            state.second = state.second ? state.second + '.' : '0.';
+            updateDisplay(state.second);
+        }
     }
 }
 
@@ -175,8 +110,10 @@ const operate = () => {
     updateDisplay(state.first);
 }
 
-document.getElementById('clear').addEventListener('click', clear);
-document.getElementById('equal').addEventListener('click', operate);
+clearBtn.addEventListener('click', clear);
+equalBtn.addEventListener('click', operate);
+backspaceBtn.addEventListener('click', backspace);
+decimalBtn.addEventListener("click", appendDecimal);
 
 document.querySelectorAll('[data-number]').forEach(btn => {
     btn.addEventListener('click', () => appendNumber(btn.textContent));
@@ -185,3 +122,18 @@ document.querySelectorAll('[data-number]').forEach(btn => {
 document.querySelectorAll('.operator').forEach(btn => {
     btn.addEventListener('click', () => chooseOperator(btn.id));
 });
+
+document.addEventListener("keydown", (e) => {
+  if (!isNaN(e.key)) appendNumber(e.key);
+
+  if (e.key === ".") appendDecimal();
+  if (e.key === "Backspace") backspace();
+  if (e.key === "Enter" || e.key === "=") operate();
+  if (e.key === "Escape") clear();
+
+  if (e.key === "+") chooseOperator("add");
+  if (e.key === "-") chooseOperator("subtract");
+  if (e.key === "*") chooseOperator("multiply");
+  if (e.key === "/") chooseOperator("divide");
+});
+
